@@ -27,6 +27,7 @@ import rx.functions.Func1;
 
 import com.kenzan.karyon.rxnetty.endpoint.HelloEndpoint;
 import java.io.*;
+import java.net.InetAddress;
 
 public class IndexResource implements RequestHandler<ByteBuf, ByteBuf>{
 
@@ -52,27 +53,53 @@ public class IndexResource implements RequestHandler<ByteBuf, ByteBuf>{
                 .flatMap(new Func1<String, Observable<Void>>() {
                     @Override
                     public Observable<Void> call(String body) {
-                        String instanceId = "";
+                        String hostNameAndIp = "";
                         String userdata = "";
 
                         try{
-                            //instanceId = execCmd("curl http://metadata/computeMetadata/v1/instance/id -H Metadata-Flavor:Google") + execCmd("wget -q -O - http://instance-data/latest/meta-data/instance-id");
                             userdata = System.getenv("USERDATA");
                             if (userdata == null) {
                                 userdata = "See log file";
                                 logger.info("User Data not found. \nCurrent Environment Variables: {}", System.getenv());
                             }
 
+                            hostNameAndIp = GetIpAddressFromIfconfigOnLinux();
+
                         } catch (Exception e){
+                            hostNameAndIp = e.getMessage();
                             e.printStackTrace();
                         }
-                        response.writeString("<html><head><style>body{text-align:center; font-family:'Lucida Grande'; color: white; background-color: black}</style></head><body><img src='https://files.readme.io/RXZIYEYlRb68CArUf6OJ_spinnaker-header-transparent.png' /><h2>Example Spinnaker Application</h2><h3>Instance Id " + instanceId + "</h3><h3>$USERDATA ENV VAR: " + userdata + "</h3></body></html>");
+                        response.writeString("<html><head><style>body{text-align:center; font-family:'Lucida Grande'; color: white; background-color: black}</style></head><body><img src='https://files.readme.io/RXZIYEYlRb68CArUf6OJ_spinnaker-header-transparent.png' /><h2>Example Spinnaker Application</h2><h3>Instance Id " + hostNameAndIp + "</h3><h3>$USERDATA ENV VAR: " + userdata + "</h3></body></html>");
                         return response.close();
                     }
                 });
             }
         });
     }
+
+    private String GetIpAddressFromIfconfigOnLinux(){
+        String ret = "";
+        try{
+            Process p = Runtime.getRuntime().exec("ifconfig");
+            p.waitFor();
+            BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line = "";
+            while((line = br.readLine()) != null){
+                if(line.contains("inet addr") && !line.contains("127.0.0.1")){
+                    ret = line.split(":")[1].split(" ")[0];
+                    break;
+                }
+            }
+
+            br.close();
+        }
+        catch(Exception e){
+            ret = e.getMessage();
+        }
+
+        return ret;
+    }
+
     @Override
     public Observable<Void> handle(HttpServerRequest<ByteBuf> request,
             HttpServerResponse<ByteBuf> response) {
