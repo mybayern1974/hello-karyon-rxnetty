@@ -27,6 +27,7 @@ import rx.functions.Func1;
 
 import com.kenzan.karyon.rxnetty.endpoint.HelloEndpoint;
 import java.io.*;
+import java.net.InetAddress;
 
 public class IndexResource implements RequestHandler<ByteBuf, ByteBuf>{
 
@@ -63,10 +64,13 @@ public class IndexResource implements RequestHandler<ByteBuf, ByteBuf>{
                                 logger.info("User Data not found. \nCurrent Environment Variables: {}", System.getenv());
                             }
 
+                            InetAddress inetAddress = InetAddress.getLocalHost();
+                            String hostNameAndIp = inetAddress.getHostName() + "_" + inetAddress.getHostAddress();
+
                         } catch (Exception e){
                             e.printStackTrace();
                         }
-                        response.writeString("<html><head><style>body{text-align:center; font-family:'Lucida Grande'; color: white; background-color: black}</style></head><body><img src='https://files.readme.io/RXZIYEYlRb68CArUf6OJ_spinnaker-header-transparent.png' /><h2>Example Spinnaker Application</h2><h3>Instance Id " + instanceId + "</h3><h3>$USERDATA ENV VAR: " + userdata + "</h3></body></html>");
+                        response.writeString("<html><head><style>body{text-align:center; font-family:'Lucida Grande'; color: white; background-color: black}</style></head><body><img src='https://files.readme.io/RXZIYEYlRb68CArUf6OJ_spinnaker-header-transparent.png' /><h2>Example Spinnaker Application</h2><h3>Instance Id " + hostNameAndIp + "</h3><h3>$USERDATA ENV VAR: " + userdata + "</h3></body></html>");
                         return response.close();
                     }
                 });
