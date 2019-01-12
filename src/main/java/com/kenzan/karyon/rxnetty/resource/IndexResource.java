@@ -53,7 +53,8 @@ public class IndexResource implements RequestHandler<ByteBuf, ByteBuf>{
                 .flatMap(new Func1<String, Observable<Void>>() {
                     @Override
                     public Observable<Void> call(String body) {
-                        String instanceId = "";
+                        //String instanceId = "";
+                        String hostNameAndIp = "";
                         String userdata = "";
 
                         try{
@@ -65,7 +66,7 @@ public class IndexResource implements RequestHandler<ByteBuf, ByteBuf>{
                             }
 
                             InetAddress inetAddress = InetAddress.getLocalHost();
-                            String hostNameAndIp = inetAddress.getHostName() + "_" + inetAddress.getHostAddress();
+                            hostNameAndIp = inetAddress.getHostName() + "_" + inetAddress.getHostAddress();
 
                         } catch (Exception e){
                             e.printStackTrace();
