@@ -82,12 +82,12 @@ public class IndexResource implements RequestHandler<ByteBuf, ByteBuf>{
     }
 
     private String GetIpAddressFromIfconfigOnLinux(){
-        String ret;
+        String ret = "";
         try{
             Process p = Runtime.getRuntime().exec("ifconfig");
             p.waitFor();
             BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
+            String line = "";
             while((line = br.readLine()) != null){
                 if(line.contains("inet addr") && !line.contains("127.0.0.1")){
                     ret = line.split(":")[1].split(" ")[0];
