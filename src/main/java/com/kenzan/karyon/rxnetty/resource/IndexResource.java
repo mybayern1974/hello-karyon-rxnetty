@@ -65,20 +65,43 @@ public class IndexResource implements RequestHandler<ByteBuf, ByteBuf>{
                                 logger.info("User Data not found. \nCurrent Environment Variables: {}", System.getenv());
                             }
 
-                            InetAddress inetAddress = InetAddress.getLocalHost();
-                            hostNameAndIp = inetAddress.getHostName() + "_" + inetAddress.getHostAddress();
+                            //InetAddress inetAddress = InetAddress.getLocalHost();
+                            //hostNameAndIp = inetAddress.getHostName() + "_" + inetAddress.getHostAddress();
+                            hostNameAndIp = GetIpAddressFromIfconfigOnLinux();
 
                         } catch (Exception e){
                             hostNameAndIp = e.getMessage();
                             e.printStackTrace();
                         }
-                        response.writeString("<html><head><style>body{text-align:center; font-family:'Lucida Grande'; color: white; background-color: black}</style></head><body><img src='https://files.readme.io/RXZIYEYlRb68CArUf6OJ_spinnaker-header-transparent.png' /><h2>Example Spinnaker Application (test ip exception)</h2><h3>Instance Id " + hostNameAndIp + "</h3><h3>$USERDATA ENV VAR: " + userdata + "</h3></body></html>");
+                        response.writeString("<html><head><style>body{text-align:center; font-family:'Lucida Grande'; color: white; background-color: black}</style></head><body><img src='https://files.readme.io/RXZIYEYlRb68CArUf6OJ_spinnaker-header-transparent.png' /><h2>Example Spinnaker Application</h2><h3>Instance Id " + hostNameAndIp + "</h3><h3>$USERDATA ENV VAR: " + userdata + "</h3></body></html>");
                         return response.close();
                     }
                 });
             }
         });
     }
+
+    private String GetIpAddressFromIfconfigOnLinux(){
+        String ret;
+        try{
+            Process p = Runtime.getRuntime().exec("ifconfig");
+            p.waitFor();
+            BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            while((line = br.readLine()) != null){
+                if(line.contains("inet addr") && !line.contains("127.0.0.1")){
+                    ret = line.split(":")[1].split(" ")[0];
+                    break;
+                }
+            }
+
+            br.close();
+        }
+        catch(Exception e){
+            ret = e.getMessage();
+        }
+    }
+
     @Override
     public Observable<Void> handle(HttpServerRequest<ByteBuf> request,
             HttpServerResponse<ByteBuf> response) {
