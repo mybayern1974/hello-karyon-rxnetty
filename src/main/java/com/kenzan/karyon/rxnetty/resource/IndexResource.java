@@ -72,7 +72,7 @@ public class IndexResource implements RequestHandler<ByteBuf, ByteBuf>{
                             hostNameAndIp = e.getMessage();
                             e.printStackTrace();
                         }
-                        response.writeString("<html><head><style>body{text-align:center; font-family:'Lucida Grande'; color: white; background-color: black}</style></head><body><img src='https://files.readme.io/RXZIYEYlRb68CArUf6OJ_spinnaker-header-transparent.png' /><h2>Example Spinnaker Application</h2><h3>Instance Id " + hostNameAndIp + "</h3><h3>$USERDATA ENV VAR: " + userdata + "</h3></body></html>");
+                        response.writeString("<html><head><style>body{text-align:center; font-family:'Lucida Grande'; color: white; background-color: black}</style></head><body><img src='https://files.readme.io/RXZIYEYlRb68CArUf6OJ_spinnaker-header-transparent.png' /><h2>Example Spinnaker Application (test ip exception)</h2><h3>Instance Id " + hostNameAndIp + "</h3><h3>$USERDATA ENV VAR: " + userdata + "</h3></body></html>");
                         return response.close();
                     }
                 });
