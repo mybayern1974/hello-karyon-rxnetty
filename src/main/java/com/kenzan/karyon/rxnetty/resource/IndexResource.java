@@ -100,6 +100,8 @@ public class IndexResource implements RequestHandler<ByteBuf, ByteBuf>{
         catch(Exception e){
             ret = e.getMessage();
         }
+
+        return ret;
     }
 
     @Override
