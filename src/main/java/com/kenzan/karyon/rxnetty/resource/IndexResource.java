@@ -53,20 +53,16 @@ public class IndexResource implements RequestHandler<ByteBuf, ByteBuf>{
                 .flatMap(new Func1<String, Observable<Void>>() {
                     @Override
                     public Observable<Void> call(String body) {
-                        //String instanceId = "";
                         String hostNameAndIp = "";
                         String userdata = "";
 
                         try{
-                            //instanceId = execCmd("curl http://metadata/computeMetadata/v1/instance/id -H Metadata-Flavor:Google") + execCmd("wget -q -O - http://instance-data/latest/meta-data/instance-id");
                             userdata = System.getenv("USERDATA");
                             if (userdata == null) {
                                 userdata = "See log file";
                                 logger.info("User Data not found. \nCurrent Environment Variables: {}", System.getenv());
                             }
 
-                            //InetAddress inetAddress = InetAddress.getLocalHost();
-                            //hostNameAndIp = inetAddress.getHostName() + "_" + inetAddress.getHostAddress();
                             hostNameAndIp = GetIpAddressFromIfconfigOnLinux();
 
                         } catch (Exception e){
